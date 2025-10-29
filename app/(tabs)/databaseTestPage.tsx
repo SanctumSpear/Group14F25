@@ -9,16 +9,14 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
+import * as dbHelpers from "@/supabase/databaseHelpers"; // Import the helper functions
+import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
 
-type DataItem = {
-  id: number;
-  value: string;
-};
 
 export default function DatabaseTestPage() {
     
     // State to hold data from the database
-  const [data, setData] = useState<DataItem[]>([]);
+  const [data, setData] = useState<IUserTableDTO[]>([]);
 
   // State to hold input value
   const [inputValue, setInputValue] = useState("");
@@ -26,13 +24,14 @@ export default function DatabaseTestPage() {
   // State to manage loading state
   const [loading, setLoading] = useState(false);
 
+  const app_user_tableName = "app_user"; // Replace with your actual table name
+
   // Function to fetch data from the database
   const fetchData = async () => {
     setLoading(true);
     try {
       // Replace with your Supabase or API fetch logic
-      const response = await fetch("https://your-api-endpoint.com/data");
-      const result: DataItem[] = await response.json();
+      const result = await dbHelpers.fetchAllRows<IUserTableDTO>(app_user_tableName);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -53,23 +52,31 @@ export default function DatabaseTestPage() {
 
 
         try {
-        // Replace with your Supabase or API POST logic
-        const response = await fetch("https://your-api-endpoint.com/data", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ value: inputValue }),
-        });
 
-        if (response.ok) {
-            setInputValue("");
-            fetchData(); // Refresh the data after adding
-        } else {
-            console.error("Error adding data:", response.statusText);
-        }
-        } catch (error) {
-        console.error("Error adding data:", error);
+            // Map the input value to the IUserTableDTO schema
+            const newUser: IUserTableDTO = {
+                user_firstName: trimmedInput, // Assuming inputValue is the first name
+                user_lastName: "Doe", // Replace with actual logic for last name
+                user_email: "example@example.com", // Replace with actual logic for email
+                user_createdAt: new Date(), // Optional field
+            };
+       
+            // Replace with your Supabase or API POST logic
+            const result = await dbHelpers.addRows<IUserTableDTO>("app_user", [newUser]);
+            
+
+            if (result.length > 0) {
+                setInputValue("");
+                setData(result); // Refresh the data after adding
+            } 
+            else 
+            {
+            console.error("Error adding data: No rows were inserted.");
+            }
+        } 
+        catch (error) 
+        {
+         console.error("Error adding data:", error);
         }
     };
 
