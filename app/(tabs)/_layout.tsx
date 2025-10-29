@@ -44,6 +44,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="dbTestPage"
+        options={{
+          title: "Database Test",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="smiley.fill" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -41,30 +41,37 @@ export default function DatabaseTestPage() {
     }
   };
 
-  // Function to add data to the database
-  const addData = async () => {
-    if (!inputValue.trim()) return;
+    // Function to add data to the database
+    const addData = async () => {
+        // Remove leading and trailing whitespace from the input value
+        const trimmedInput = inputValue.trim();
 
-    try {
-      // Replace with your Supabase or API POST logic
-      const response = await fetch("https://your-api-endpoint.com/data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ value: inputValue }),
-      });
+        // Check if the trimmed input is empty
+        if (trimmedInput === "") {
+            return; // Exit the function if the input is empty
+        }
 
-      if (response.ok) {
-        setInputValue("");
-        fetchData(); // Refresh the data after adding
-      } else {
-        console.error("Error adding data:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error adding data:", error);
-    }
-  };
+
+        try {
+        // Replace with your Supabase or API POST logic
+        const response = await fetch("https://your-api-endpoint.com/data", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ value: inputValue }),
+        });
+
+        if (response.ok) {
+            setInputValue("");
+            fetchData(); // Refresh the data after adding
+        } else {
+            console.error("Error adding data:", response.statusText);
+        }
+        } catch (error) {
+        console.error("Error adding data:", error);
+        }
+    };
 
     // Setup the UI elements
     return (
