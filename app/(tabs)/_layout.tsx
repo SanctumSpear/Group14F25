@@ -46,7 +46,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="dbTestPage"
+        name="databaseTestPage"
         options={{
           title: "Database Test",
           tabBarIcon: ({ color }) => (

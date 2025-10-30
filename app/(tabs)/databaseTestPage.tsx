@@ -1,11 +1,11 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import * as dbHelpers from "@/supabase/databaseHelpers"; // Import the helper functions
-import { IUserTableInsertDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
-import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
+import { IUserTableFetchDTO, IUserTableInsertDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
 import React, { useState } from "react";
 import {
     FlatList,
+    Pressable,
     Keyboard,
     StyleSheet,
     TextInput,
@@ -18,7 +18,7 @@ import {
 export default function DatabaseTestPage() {
     
     // State to hold data from the database
-  const [data, setData] = useState<IUserTableDTO[]>([]);
+  const [data, setData] = useState<IUserTableFetchDTO[]>([]);
 
   // State to hold input value
   const [inputValue, setInputValue] = useState("");
@@ -26,14 +26,15 @@ export default function DatabaseTestPage() {
   // State to manage loading state
   const [loading, setLoading] = useState(false);
 
-  const app_user_tableName = "app_user"; // Replace with your actual table name
+  const tableName = "app_user"; // Replace with your actual table name
 
   // Function to fetch data from the database
   const fetchData = async () => {
     setLoading(true);
     try {
       // Replace with your Supabase or API fetch logic
-      const result = await dbHelpers.fetchAllRows<IUserTableDTO>(app_user_tableName);
+      const result = await dbHelpers.fetchAllRows<IUserTableFetchDTO>(tableName);
+      console.log("Fetched rows:", result);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -69,7 +70,7 @@ export default function DatabaseTestPage() {
             };
        
             // Replace with your Supabase or API POST logic
-            const result = await dbHelpers.addRows<IUserTableInsertDTO>(app_user_tableName, [newUser]);
+            const result = await dbHelpers.addRows<IUserTableInsertDTO>(tableName, [newUser]);
             
 
             if (result.length > 0) {
@@ -77,7 +78,7 @@ export default function DatabaseTestPage() {
                 setInputValue("");
 
                 // Fetch updated data
-                const result = await dbHelpers.fetchAllRows<IUserTableDTO>(app_user_tableName);
+                const result = await dbHelpers.fetchAllRows<IUserTableFetchDTO>(tableName);
 
                 setData(result); // Refresh the data after adding
             } 
@@ -94,33 +95,29 @@ export default function DatabaseTestPage() {
 
     // Setup the UI elements
     return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-
-      // Main container
+    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>      
       <ThemedView style={styles.container}>
-
-        // Page title
         <ThemedText type="title" style={styles.title}>
           Database Test Page
         </ThemedText>
 
-        // Button to fetch data
         <TouchableOpacity style={styles.button} onPress={fetchData} disabled={loading}>
           <ThemedText type="defaultSemiBold" style={styles.buttonText}>
             {loading ? "Loading..." : "Fetch Data"}
           </ThemedText>
         </TouchableOpacity>
 
-        // List to display fetched data
-        <FlatList
+       <FlatList
           data={data}
-          keyExtractor={(item) => item.user_id?.toString() || Math.random().toString()}
+          keyExtractor={(item, index) => item.app_user_id?.toString() || index.toString()}
           renderItem={({ item }) => (
-            <ThemedText style={styles.item}>{`${item.user_firstName} ${item.user_lastName} (${item.user_email})`}</ThemedText>
+            <ThemedText style={styles.item}>{`${item.app_user_firstName} ${item.app_user_lastName} (${item.app_user_email})`}</ThemedText>
           )}
+          ListEmptyComponent={
+            <ThemedText style={styles.item}>No data available</ThemedText>
+          }
         />
-
-        // Input field to add new data
+        
         <TextInput
           style={styles.input}
           placeholder="Enter new data"
@@ -129,16 +126,13 @@ export default function DatabaseTestPage() {
           onChangeText={setInputValue}
         />
 
-        // Button to add data
         <TouchableOpacity style={styles.button} onPress={addUser}>
           <ThemedText type="defaultSemiBold" style={styles.buttonText}>
             Add Data
           </ThemedText>
-        </TouchableOpacity>
-        
+        </TouchableOpacity>        
       </ThemedView>
-
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 

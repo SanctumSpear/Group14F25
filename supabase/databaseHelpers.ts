@@ -1,4 +1,4 @@
-import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
+import { IUserTableFetchDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
 import { supabase } from "./supabaseClient";
 
 /**
@@ -25,7 +25,7 @@ export const fetchAllRows = async <T>(tableName: string): Promise<T[]> => {
  *
  * @param {string} tableName - The name of the table to fetch data from.
  * @param {number} id - The ID of the row to fetch.
- * @returns {Promise<IUserTableDTO | null>} A promise that resolves to the row data or null if not found.
+ * @returns {Promise<IUserTableFetchDTO | null>} A promise that resolves to the row data or null if not found.
  * @throws {Error} If the database query fails.
  */
 export const fetchRowById = async <T>(
