@@ -1,16 +1,18 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import * as dbHelpers from "@/supabase/databaseHelpers"; // Import the helper functions
+import { IUserTableInsertDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
+import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Keyboard,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback
+    FlatList,
+    Keyboard,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback
 } from "react-native";
-import * as dbHelpers from "@/supabase/databaseHelpers"; // Import the helper functions
-import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
+
 
 
 export default function DatabaseTestPage() {
@@ -40,8 +42,8 @@ export default function DatabaseTestPage() {
     }
   };
 
-    // Function to add data to the database
-    const addData = async () => {
+    // Function to add a new user to the database
+    const addUser = async () => {
         // Remove leading and trailing whitespace from the input value
         const trimmedInput = inputValue.trim();
 
@@ -50,23 +52,33 @@ export default function DatabaseTestPage() {
             return; // Exit the function if the input is empty
         }
 
+        // Split the input into first and last name (simple example)
+        const [firstName, lastName] = trimmedInput.split(" ");
+
+        // Create a new email using the first letter of the first name and the entire last name
+        const email = `${firstName.charAt(0).toLowerCase()}${lastName ? lastName.toLowerCase() : ""}@example.com`;
+
 
         try {
 
-            // Map the input value to the IUserTableDTO schema
-            const newUser: IUserTableDTO = {
-                user_firstName: trimmedInput, // Assuming inputValue is the first name
-                user_lastName: "Doe", // Replace with actual logic for last name
-                user_email: "example@example.com", // Replace with actual logic for email
-                user_createdAt: new Date(), // Optional field
+            // IUserTableInsertDTO excludes auto-generated fields (user_id, user_createdAt)
+            const newUser: IUserTableInsertDTO = {
+                user_firstName: firstName,
+                user_lastName: lastName || "",
+                user_email: email,
             };
        
             // Replace with your Supabase or API POST logic
-            const result = await dbHelpers.addRows<IUserTableDTO>("app_user", [newUser]);
+            const result = await dbHelpers.addRows<IUserTableInsertDTO>(app_user_tableName, [newUser]);
             
 
             if (result.length > 0) {
+                // Clear the input field
                 setInputValue("");
+
+                // Fetch updated data
+                const result = await dbHelpers.fetchAllRows<IUserTableDTO>(app_user_tableName);
+
                 setData(result); // Refresh the data after adding
             } 
             else 
@@ -102,9 +114,9 @@ export default function DatabaseTestPage() {
         // List to display fetched data
         <FlatList
           data={data}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.user_id?.toString() || Math.random().toString()}
           renderItem={({ item }) => (
-            <ThemedText style={styles.item}>{item.value}</ThemedText>
+            <ThemedText style={styles.item}>{`${item.user_firstName} ${item.user_lastName} (${item.user_email})`}</ThemedText>
           )}
         />
 
@@ -118,7 +130,7 @@ export default function DatabaseTestPage() {
         />
 
         // Button to add data
-        <TouchableOpacity style={styles.button} onPress={addData}>
+        <TouchableOpacity style={styles.button} onPress={addUser}>
           <ThemedText type="defaultSemiBold" style={styles.buttonText}>
             Add Data
           </ThemedText>

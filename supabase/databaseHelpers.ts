@@ -1,5 +1,5 @@
-import { supabase } from "./supabaseClient";
 import { IUserTableDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
+import { supabase } from "./supabaseClient";
 
 /**
  * Fetches all rows from a specified table in the database.
@@ -163,7 +163,7 @@ export const countRows = async <T>(
   tableName: string,
   filters?: Partial<T>
 ): Promise<number> => {
-  let query = supabase.from<T>(tableName).select("*", { count: "exact", head: true });
+  let query = supabase.from(tableName).select("*", { count: "exact", head: true });
 
   // Apply filters if provided
   if (filters) {
