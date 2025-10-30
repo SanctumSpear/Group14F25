@@ -4,14 +4,18 @@ import * as dbHelpers from "@/supabase/databaseHelpers"; // Import the helper fu
 import { IUserTableFetchDTO, IUserTableInsertDTO } from "@/types/Interfaces/DTOs/IUserTableDTO";
 import React, { useState } from "react";
 import {
-    FlatList,
-    Pressable,
-    Keyboard,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback
+  FlatList,
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  View,
 } from "react-native";
+
+
 
 
 
@@ -27,6 +31,48 @@ export default function DatabaseTestPage() {
   const [loading, setLoading] = useState(false);
 
   const tableName = "app_user"; // Replace with your actual table name
+
+
+  const Table = ({ data }: { data: IUserTableFetchDTO[] }) => {
+  const headers = ["First Name", "Last Name", "Email", "Created At"];
+
+  return (
+    <View style={styles.tableContainer}>
+      {/* Table Header */}
+      <View style={styles.tableRow}>
+        {headers.map((header, index) => (
+          <Text key={index} style={[styles.tableCell, styles.headerCell]}>
+            {header}
+          </Text>
+        ))}
+      </View>
+
+      {/* Table Rows */}
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => item.app_user_id?.toString() || index.toString()}
+        renderItem={({ item }) => {
+          const utcDate = item.app_user_created_at ? new Date(item.app_user_created_at) : null;
+          const formattedDate = utcDate
+            ? utcDate.toLocaleString("en-US")
+            : "N/A";
+
+          return (
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}>{item.app_user_firstname || "Unknown"}</Text>
+              <Text style={styles.tableCell}>{item.app_user_lastname || "User"}</Text>
+              <Text style={styles.tableCell}>{item.app_user_email || "No Email"}</Text>
+              <Text style={styles.tableCell}>{formattedDate}</Text>
+            </View>
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={styles.noDataText}>No data available</Text>
+        }
+      />
+    </View>
+  );
+};
 
   // Function to fetch data from the database
   const fetchData = async () => {
@@ -64,9 +110,9 @@ export default function DatabaseTestPage() {
 
             // IUserTableInsertDTO excludes auto-generated fields (user_id, user_createdAt)
             const newUser: IUserTableInsertDTO = {
-                user_firstName: firstName,
-                user_lastName: lastName || "",
-                user_email: email,
+                app_user_firstname: firstName,
+                app_user_lastname: lastName || "",
+                app_user_email: email,
             };
        
             // Replace with your Supabase or API POST logic
@@ -93,48 +139,66 @@ export default function DatabaseTestPage() {
         }
     };
 
-    // Setup the UI elements
+    {/* Setup the UI elements */}
     return (
-    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>      
-      <ThemedView style={styles.container}>
-        <ThemedText type="title" style={styles.title}>
-          Database Test Page
-        </ThemedText>
-
-        <TouchableOpacity style={styles.button} onPress={fetchData} disabled={loading}>
-          <ThemedText type="defaultSemiBold" style={styles.buttonText}>
-            {loading ? "Loading..." : "Fetch Data"}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Pressable
+        style={{ flex: 1 }}
+        onPress={Keyboard.dismiss}
+      >
+        <ThemedView style={styles.container}>
+          <ThemedText type="title" style={styles.title}>
+            Database Test Page
           </ThemedText>
-        </TouchableOpacity>
 
-       <FlatList
-          data={data}
-          keyExtractor={(item, index) => item.app_user_id?.toString() || index.toString()}
-          renderItem={({ item }) => (
-            <ThemedText style={styles.item}>{`${item.app_user_firstName} ${item.app_user_lastName} (${item.app_user_email})`}</ThemedText>
-          )}
-          ListEmptyComponent={
-            <ThemedText style={styles.item}>No data available</ThemedText>
-          }
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Enter new data"
-          placeholderTextColor="#999"
-          value={inputValue}
-          onChangeText={setInputValue}
-        />
+          {/* Button to fetch data */}
+          <Pressable
+            onPress={fetchData}
+            disabled={loading}
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.7 }, 
+              loading && { backgroundColor: "#ccc" },
+            ]}
+          >
+            <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+              {loading ? "Loading..." : "Fetch Data"}
+            </ThemedText>
+          </Pressable>
 
-        <TouchableOpacity style={styles.button} onPress={addUser}>
-          <ThemedText type="defaultSemiBold" style={styles.buttonText}>
-            Add Data
-          </ThemedText>
-        </TouchableOpacity>        
-      </ThemedView>
-    </Pressable>
+          {/* Table Component */}
+          <Table data={data} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Enter new data"
+            placeholderTextColor="#999"
+            value={inputValue}
+            onChangeText={setInputValue}
+          />
+
+          <Pressable
+            onPress={addUser}
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+              Add Data
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 }
+
+
+
 
 // Styles for the UI components
 const styles = StyleSheet.create({
@@ -169,5 +233,30 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+  },
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  tableCell: {
+    flex: 1,
+    padding: 8,
+    textAlign: "center",
+  },
+  headerCell: {
+    backgroundColor: "#f0f0f0",
+    fontWeight: "bold",
+  },
+  noDataText: {
+    textAlign: "center",
+    padding: 16,
+    color: "#999",
   },
 });
