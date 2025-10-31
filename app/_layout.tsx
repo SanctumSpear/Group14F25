@@ -54,7 +54,7 @@ export default function RootLayout() {
           options={{ presentation: "modal", title: "Modal" }}
         />
       </Stack>
-      <StatusBar style="auto" />{" "}
+      <StatusBar style="auto" />
       {/* Automatically adjusts the status bar style */}
     </ThemeProvider>
   );
