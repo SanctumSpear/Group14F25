@@ -1,8 +1,10 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
+import { deleteCurrentUserAccount } from "@/supabase/databaseHelpers";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Keyboard,
   StyleSheet,
   TextInput,
@@ -13,10 +15,45 @@ import {
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleLogin = () => {
     // TODO: replace this with real login logic (API call, Firebase, etc.)
     alert(`Logging in with:\nEmail: ${email}\nPassword: ${password}`);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      // confirm deletion
+      Alert.alert(
+        "Delete Account",
+        "Are you sure you want to delete your account? This cannot be undone.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {},
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              try {
+                await deleteCurrentUserAccount();
+                alert("Account deleted successfully");
+                router.replace("/(auth)/login");
+              } catch (error) {
+                console.error("Delete error:", error);
+                alert("Failed to delete account");
+              }
+            },
+            style: "destructive",
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Delete account error:", error);
+      alert("Error deleting account");
+    }
   };
 
   return (
@@ -52,6 +89,15 @@ export default function LoginScreen() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <ThemedText type="defaultSemiBold" style={styles.buttonText}>
             Log In
+          </ThemedText>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.button, styles.deleteButton]} 
+          onPress={handleDeleteAccount}
+        >
+          <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+            Delete Account (TEST)
           </ThemedText>
         </TouchableOpacity>
 
@@ -97,5 +143,9 @@ const styles = StyleSheet.create({
   link: {
     marginTop: 12,
     alignSelf: "center",
+  },
+  deleteButton: {
+    backgroundColor: "#FF3B30",
+    marginTop: 12,
   },
 });

@@ -207,3 +207,50 @@ export const fetchPaginatedRows = async <T>(
   if (error) throw error;
   return data || [];
 };
+
+/**
+ * Deletes the currently authenticated user's account.
+ * This attempts to delete the user from Supabase Auth.
+ *
+ * @returns {Promise<void>} A promise that resolves when the user is deleted.
+ * @throws {Error} If the deletion fails.
+ */
+export const deleteCurrentUserAccount = async (): Promise<void> => {
+  const supabase = getSupabase();
+
+  // get the current user
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    throw new Error("No user logged in");
+  }
+
+  // We use an Edge Function to perform admin delete on the server.
+  // Get the session so we can forward the user's access token to the function
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !session) {
+    throw new Error("No active session found");
+  }
+
+  const token = session.access_token;
+
+  // Call Supabase Edge Function 'delete-user' and forward the Bearer token
+  // Invoke Edge Function
+  const { data: functionData, error: functionError } = await supabase.functions.invoke("delete-account", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (functionError) {
+    // function failed to invoke
+    throw functionError;
+  }
+
+  // The function returns JSON; check for server side error message
+  if (functionData && (functionData as any).error) {
+    throw new Error((functionData as any).error);
+  }
+
+  // sign out after deletion
+  await supabase.auth.signOut();
+};
