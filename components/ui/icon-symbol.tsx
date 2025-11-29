@@ -21,6 +21,7 @@ const MAPPING = {
   'star.fill': 'star',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'car.fill': 'directions-car',
 } as IconMapping;
 
 /**
