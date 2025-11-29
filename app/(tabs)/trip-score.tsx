@@ -1,12 +1,12 @@
+import ScoreRing from '@/components/ui/score-ring';
+import StatCard from '@/components/ui/stat-card';
 import { Colors } from '@/constants/theme';
-import { getSupabase } from '@/supabase/supabaseClient';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getSupabase } from '@/supabase/supabaseClient';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FlatList } from 'react-native-gesture-handler';
-import ScoreRing from '@/components/ui/score-ring';
-import StatCard from '@/components/ui/stat-card';
 
 
 interface TripScoreDetails {
