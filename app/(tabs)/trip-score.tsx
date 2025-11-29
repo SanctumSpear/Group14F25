@@ -96,7 +96,7 @@ useEffect(() => {
       .then(data => setSummaries(Array.isArray(data) ? data : []))
       .catch(() => setSummaries([]))
       .finally(() => setSummariesLoading(false));
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
   if (summaries.length > 0 && selectedTripId === null) {
