@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/theme';
+import { getSupabase } from '@/supabase/supabaseClient';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -26,6 +27,7 @@ interface TripSummary {
 }
 
 export default function TripScoreScreen(){
+  const [userId, setUserId] = useState<string | null>(null);
   const [safetyEvents, setSafetyEvents] = useState<number | null>(null);
   const [details, setDetails] = useState<TripScoreDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,18 @@ export default function TripScoreScreen(){
     }))
   );
 
+  useEffect(() => {
+  const fetchUser = async () => {
+    const supabase = getSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      // Use user.id as the user_id for your fetch
+      setUserId(user.id);
+    }
+  };
+  fetchUser();
+}, []);
+
   // When summaries are loaded, set the default selected trip
 // Keep dropdownItems in sync with summaries
 useEffect(() => {
@@ -57,7 +71,7 @@ useEffect(() => {
   useEffect(() => {
   if (selectedTripId === null) return;
   setLoading(true);
-  fetch(`https://dagsbgwwdhosdgppojks.functions.supabase.co/fetch-trip-score-details?trip_id=${selectedTripId}`)
+  fetch(`https://dagsbgwwdhosdgppojks.functions.supabase.co/fetch-trip-score-details?trip_id=${selectedTripId}&user_id=${userId}`)
     .then(res => res.json())
     .then(data => setDetails(data))
     .catch(() => setDetails({ 
@@ -72,12 +86,12 @@ useEffect(() => {
     .finally(() =>{ 
       setSafetyEvents((details?.trip_rapidAccel ?? 0) + (details?.trip_rapidDecel ?? 0));
       setLoading(false); });
-}, [selectedTripId, details?.trip_rapidAccel, details?.trip_rapidDecel]);
+}, [selectedTripId, userId, details?.trip_rapidAccel, details?.trip_rapidDecel]);
 
   // Fetch a series of previous trip summaries
   useEffect(() => {
     setSummariesLoading(true);
-    fetch('https://dagsbgwwdhosdgppojks.functions.supabase.co/fetch-trip-score-summaries?limit=5')
+    fetch(`https://dagsbgwwdhosdgppojks.functions.supabase.co/fetch-trip-score-summaries?limit=5&user_id=${userId}`)
       .then(res => res.json())
       .then(data => setSummaries(Array.isArray(data) ? data : []))
       .catch(() => setSummaries([]))
