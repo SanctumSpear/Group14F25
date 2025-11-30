@@ -98,4 +98,20 @@ const styles = StyleSheet.create({
 
   },
   link: { marginTop: 20, textAlign: "center", color: "#007bff" },
+  loginButton: {
+  backgroundColor: "#007bff",
+  padding: 15,
+  borderRadius: 8,
+  alignItems: "center",
+  marginTop: 10,
+},
+loginButtonPressed: {
+  backgroundColor: "#0056b3", // Darker shade when pressed
+  transform: [{ scale: 0.98 }], // Slight shrink effect
+},
+loginButtonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "600",
+},
 });
