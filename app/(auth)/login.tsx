@@ -2,13 +2,12 @@ import { getSupabase } from "@/supabase/supabaseClient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Button,
   Image,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 
 export default function Login() {
@@ -70,7 +69,18 @@ export default function Login() {
         style={styles.input}
         placeholderTextColor="#aaa"
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Pressable
+  onPress={handleLogin}
+  disabled={loading}
+  style={({ pressed }) => [
+    styles.loginButton,
+    pressed && styles.loginButtonPressed,
+  ]}
+>
+  <Text style={styles.loginButtonText}>
+    {loading ? "Logging in..." : "Login"}
+  </Text>
+</Pressable>
 
       <Pressable onPress={() => router.push("/(auth)/signup")}>
         <Text style={styles.link}>Don't have an account? Sign Up</Text>
