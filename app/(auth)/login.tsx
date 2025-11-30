@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Button,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -50,12 +51,15 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={require('@/assets/images/drivedownicon.png')} style={{ width: 320, height: 320 }} />
+      </View>
       <Text style={styles.title}>Login</Text>
       <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        style={[styles.input, { color: "#fff" }]}
+        style={styles.input}
         placeholderTextColor="#aaa"
       />
       <TextInput
@@ -63,7 +67,7 @@ export default function Login() {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
-        style={[styles.input, { color: "#fff" }]}
+        style={styles.input}
         placeholderTextColor="#aaa"
       />
       <Button title="Login" onPress={handleLogin} />
@@ -76,14 +80,22 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#000" },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: -200
+  },
+  title: { fontSize: 24, marginBottom: 20, textAlign: "center", color: "#fff" },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#333",
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
+    backgroundColor: "#1a1a1a",
+    color: "#fff",
+
   },
   link: { marginTop: 20, textAlign: "center", color: "#007bff" },
 });

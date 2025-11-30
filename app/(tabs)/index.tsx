@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   infoBox: {
     padding: 16,
     borderRadius: 12,
-    backgroundColor: "#fff",
+    backgroundColor: "#1a1a1a",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -78,5 +78,6 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 18,
     marginBottom: 8,
+    color: "#fff",
   },
 });

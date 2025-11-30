@@ -108,11 +108,11 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f0f0f0" },
-  title: { fontSize: 22, fontWeight: "600", marginBottom: 20, textAlign: "center" },
+  container: { flex: 1, padding: 16, backgroundColor: "#000" },
+  title: { fontSize: 22, fontWeight: "600", marginBottom: 20, textAlign: "center", color: "#fff" },
   row: { marginBottom: 14 },
-  label: { fontWeight: "600", marginBottom: 4 },
-  value: { color: "#333" },
+  label: { fontWeight: "600", marginBottom: 4, color: "#fff" },
+  value: { color: "#aaa" },
   buttonRow: { marginTop: 24, flexDirection: "row", justifyContent: "center" },
   button: { width: "40%" },
 });

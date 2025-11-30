@@ -5,11 +5,13 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
+  View,
 } from "react-native";
 
 export default function Signup() {
@@ -124,6 +126,9 @@ export default function Signup() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={require('@/assets/images/drivedownicon.png')} style={{ width: 320, height: 320 }} />
+      </View>
       <ThemedText type="title" style={styles.title}>
         Create Account
       </ThemedText>
@@ -187,22 +192,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     gap: 16,
+    backgroundColor: "#000",
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: -50,
+    marginTop: -150
   },
   title: {
     textAlign: "center",
+    color: "#fff",
   },
   subtitle: {
     textAlign: "center",
     marginBottom: 16,
+    color: "#aaa",
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#333",
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#1a1a1a",
+    color: "#fff",
   },
   button: {
     backgroundColor: "#007AFF",
